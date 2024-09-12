@@ -1,0 +1,158 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an IAM role and separate policies
+  for various actions
+Parameters:
+  environment:
+    Type: String
+  product:
+    Type: String
+  service:
+    Type: String
+    Default: iam-role
+Resources:
+  GitHubAssumeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${environment}-${product}-github-terraform-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub:
+                  - repo:AarifKhan2023/Terraform:*
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::227291532998:user/organization-iam-user
+            Action: sts:AssumeRole
+
+  GitHubCloudFormationPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # CloudFormation Actions
+              - cloudformation:CreateStack
+              - cloudformation:UpdateStack
+              - cloudformation:DescribeStacks
+              - cloudformation:DeleteStack
+              - cloudformation:DescribeStackEvents
+              - cloudformation:GetTemplate
+              - cloudformation:ListStacks
+              - cloudformation:DescribeStackResource
+              - cloudformation:ContinueUpdateRollback
+              - cloudformation:ValidateTemplate
+            Resource: '*'
+
+  GitHubEC2VPCPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-ec2-vpc-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # EC2 and VPC Actions
+              - ec2:*
+            Resource: '*'
+
+  GitHubS3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-s3-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # S3 Actions
+              - s3:*
+            Resource: '*'
+
+  GitHubCloudFrontPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-cloudfront-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # CloudFront Actions
+              - cloudfront:*
+            Resource: '*'
+
+  GitHubIAMPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-iam-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # IAM Actions
+              - iam:*
+            Resource: '*'
+
+  GitHubTaggingPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-tagging-terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              # Tagging Actions
+              - tag:GetResources
+              - tag:TagResources
+              - tag:UntagResources
+            Resource: '*'
+
+  GitHubDynamodbPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub ${environment}-${product}-dynamodb--terraform-policy
+      Roles:
+        - !Ref GitHubAssumeRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Resource: arn:aws:dynamodb:ap-south-1:985539799124:table/terraform-lock
+Outputs:
+  GitHubAssumeRoleArn:
+    Description: ARN of the GitHubAssumeRole IAM Role
+    Value: !GetAtt GitHubAssumeRole.Arn
+    Export:
+      Name: !Sub ${environment}-${product}-github-terraform-role-arn

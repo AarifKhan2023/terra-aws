@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template to create an IAM Identity Provider with OpenID Connect
+Parameters:
+  environment:
+    Type: String
+  product:
+    Type: String
+  service:
+    Type: String
+    Default: github-actions
+Resources:
+  OIDCIdentityProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties: 
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+        - 'sts.amazonaws.com'
+      Tags:
+        - Key: environment
+          Value: !Sub ${environment}
+        - Key: product
+          Value: !Sub ${product}
+        - Key: service
+          Value: !Sub ${service}
+Outputs:
+  OIDCProviderArn:
+    Description: The ARN of the OIDC Identity Provider
+    Value: !GetAtt OIDCIdentityProvider.Arn
