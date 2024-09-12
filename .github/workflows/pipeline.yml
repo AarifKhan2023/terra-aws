@@ -40,6 +40,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ secrets.PRODUCT }}-github-terraform-role
           aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
 
       # Step 3: Setup Terraform
       - name: Setup Terraform
