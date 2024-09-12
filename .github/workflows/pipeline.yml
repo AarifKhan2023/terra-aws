@@ -26,7 +26,7 @@ jobs:
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment }}
       PRODUCT: ${{ secrets.PRODUCT }}   # Assuming PRODUCT is set in secrets
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
     steps:
