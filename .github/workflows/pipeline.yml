@@ -15,7 +15,7 @@ on:
         default: 'dev'
         type: string
 env:
-  ENVIRONMENT: ${{ github.event.inputs.environment }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
   PRODUCT: ${{ vars.PRODUCT }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -27,7 +27,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       # Step 1: Checkout code
@@ -42,7 +42,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ env.PRODUCT }}-github-terraform-role
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ github.event.inputs.environment || 'dev' }}-${{ env.PRODUCT }}-github-terraform-role
           aws-region: ${{ env.AWS_REGION }}
 
       # Step 3: Setup Terraform
@@ -55,15 +55,15 @@ jobs:
       - name: Terraform Init with Workspace
         run: |
           terraform init
-          terraform workspace select ${{ env.ENVIRONMENT }} || terraform workspace new ${{ env.ENVIRONMENT }}
+          terraform workspace select ${{ github.event.inputs.environment || 'dev' }} || terraform workspace new ${{ github.event.inputs.environment || 'dev' }}
         working-directory: ${{ vars.ENVIRONMENT }}
 
       # Step 5: Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -var-file="${{ env.ENVIRONMENT }}.tfvars"
+        run: terraform plan -var-file="${{ github.event.inputs.environment || 'dev' }}.tfvars"
         working-directory: ${{ vars.ENVIRONMENT }}
 
       # Optional: Apply Terraform if needed
       # - name: Terraform Apply
-      #   run: terraform apply -var-file="${{ env.ENVIRONMENT }}.tfvars" -auto-approve
+      #   run: terraform apply -var-file="${{ github.event.inputs.environment || 'dev' }}.tfvars" -auto-approve
       #   working-directory: ${{ vars.ENVIRONMENT }}
