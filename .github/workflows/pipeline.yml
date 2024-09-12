@@ -17,10 +17,10 @@ on:
 
 env:
   ENVIRONMENT: ${{ github.event.inputs.environment }}
-  PRODUCT: ${{ vars.PRODUCT }}
-  AWS_REGION: ${{ vars.AWS_REGION }}
+  PRODUCT: ${{ secrets.PRODUCT }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          
+
 jobs:
   manage-infrastructure:
     name: Validate and Manage Terraform Infrastructure
@@ -28,8 +28,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
-    environment: ${{ github.event.inputs.environment }}  # This will dynamically set the environment
 
     steps:
       # Step 1: Checkout code
@@ -41,7 +39,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ secrets.PRODUCT }}-github-terraform-role
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       # Step 3: Setup Terraform
       - name: Setup Terraform
