@@ -26,7 +26,7 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
                 token.actions.githubusercontent.com:sub:
-                  - repo:AarifKhan2023/Terraform:*
+                  - repo:AarifKhan2023/terra-aws:*
           - Effect: Allow
             Principal:
               AWS: arn:aws:iam::227291532998:user/organization-iam-user

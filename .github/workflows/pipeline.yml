@@ -46,14 +46,14 @@ jobs:
         run: |
           terraform init
           terraform workspace select ${{ env.ENVIRONMENT }} || terraform workspace new ${{ env.ENVIRONMENT }}
-        working-directory: terraform-aws
+        working-directory: terraform-aws/${{ vars.ENVIRONMENT }}
 
       # Step 5: Terraform Plan
       - name: Terraform Plan
         run: terraform plan -var-file="${{ env.ENVIRONMENT }}.tfvars"
-        working-directory: terraform-aws
+        working-directory: terraform-aws/${{ vars.ENVIRONMENT }}
 
       # Optional: Apply Terraform if needed
       # - name: Terraform Apply
       #   run: terraform apply -var-file="${{ env.ENVIRONMENT }}.tfvars" -auto-approve
-      #   working-directory: terraform-aws
+      #   working-directory: terraform-aws/${{ vars.ENVIRONMENT }}
