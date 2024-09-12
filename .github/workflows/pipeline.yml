@@ -7,13 +7,13 @@ on:
     paths:
       - 'terraform-aws/**'
       - '.github/workflows/pipeline.yml'
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'The environment to deploy to'
-        required: true
-        default: 'dev'
-        type: string
+  # workflow_dispatch:
+  #   inputs:
+  #     environment:
+  #       description: 'The environment to deploy to'
+  #       required: true
+  #       default: 'dev'
+  #       type: string
 
 jobs:
   manage-infrastructure:
@@ -22,9 +22,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      environment: dev
 
     env:
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
+      ENVIRONMENT: ${{ vars.ENVIRONMENT }}
       PRODUCT: ${{ secrets.PRODUCT }}   # Assuming PRODUCT is set in secrets
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
