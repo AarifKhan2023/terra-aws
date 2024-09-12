@@ -8,11 +8,6 @@ on:
       - 'terraform-aws/**'
       - '.github/workflows/pipeline.yml'
 
-env:
-  ENVIRONMENT: ${{ vars.ENVIRONMENT }}
-  PRODUCT: ${{ vars.PRODUCT }}
-  AWS_REGION: ${{ vars.AWS_REGION }}
-
 jobs:
   manage-infrastructure:
     name: Validate and Manage Terraform Infrastructure
@@ -21,55 +16,36 @@ jobs:
       id-token: write
       contents: read
 
+    environment: ${{ github.event.inputs.environment }}  # This will dynamically set the environment
+
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set AWS Account ID based on environment
-      - name: Set AWS Account ID and Region based on ENVIRONMENT
-        run: |
-          if [[ "${{ env.ENVIRONMENT }}" == "dev" ]]; then
-            echo "AWS_ACCOUNT_ID=${{ secrets.DEV_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
-            echo "AWS_REGION=${{ vars.DEV_REGION }}" >> $GITHUB_ENV  # Use GitHub variable or set region directly
-            echo "ENVIRONMENT=${{ vars.DEV_ENVIRONMENT }}" >> $GITHUB_ENV  # Optional, if you want to override
-          elif [[ "${{ env.ENVIRONMENT }}" == "staging" ]]; then
-            echo "AWS_ACCOUNT_ID=${{ secrets.STAGING_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
-            echo "AWS_REGION=${{ vars.STAGING_REGION }}" >> $GITHUB_ENV
-            echo "ENVIRONMENT=${{ vars.STAGING_ENVIRONMENT }}" >> $GITHUB_ENV
-          elif [[ "${{ env.ENVIRONMENT }}" == "prod" ]]; then
-            echo "AWS_ACCOUNT_ID=${{ secrets.PROD_AWS_ACCOUNT_ID }}" >> $GITHUB_ENV
-            echo "AWS_REGION=${{ vars.PROD_REGION }}" >> $GITHUB_ENV
-            echo "ENVIRONMENT=${{ vars.PROD_ENVIRONMENT }}" >> $GITHUB_ENV
-          else
-            echo "Unknown ENVIRONMENT: ${{ env.ENVIRONMENT }}"
-            exit 1
-          fi
-
-      # Step 3: Configure AWS credentials using IAM role for the selected account
+      # Step 2: Configure AWS credentials using IAM role for the selected account
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ env.PRODUCT }}-github-terraform-role
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ secrets.PRODUCT }}-github-terraform-role
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 4: Setup Terraform
+      # Step 3: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      # Step 5: Terraform Init with Workspace Selection
+      # Step 4: Terraform Init with Workspace Selection
       - name: Terraform Init with Workspace
         run: |
           terraform init
           terraform workspace select ${{ env.ENVIRONMENT }} || terraform workspace new ${{ env.ENVIRONMENT }}
         working-directory: terraform-aws
 
-      # Step 6: Terraform Plan
+      # Step 5: Terraform Plan
       - name: Terraform Plan
-        run: |
-          terraform plan -var-file="${{ env.ENVIRONMENT }}.tfvars"
+        run: terraform plan -var-file="${{ env.ENVIRONMENT }}.tfvars"
         working-directory: terraform-aws
 
       # Optional: Apply Terraform if needed
