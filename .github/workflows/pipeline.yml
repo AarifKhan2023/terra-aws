@@ -7,7 +7,13 @@ on:
     paths:
       - 'terraform-aws/**'
       - '.github/workflows/pipeline.yml'
-
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        default: 'dev'
+        type: string
 env:
   ENVIRONMENT: ${{ vars.ENVIRONMENT }}
   PRODUCT: ${{ vars.PRODUCT }}
@@ -21,12 +27,15 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: dev
 
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      # Step 2: Set Environment Variables
+      - name: Set environment variables
+        run: echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       # Step 2: Configure AWS credentials using IAM role for the selected account
       - name: Configure AWS credentials
