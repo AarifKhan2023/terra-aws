@@ -15,7 +15,7 @@ on:
         default: 'dev'
         type: string
 env:
-  ENVIRONMENT: ${{ github.event.inputs.environment }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
   PRODUCT: ${{ vars.PRODUCT }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -27,7 +27,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: ${{ github.event.inputs.environment }}  
+    environment: ${{ env.ENVIRONMENT }} 
 
     steps:
       # Step 1: Checkout code
