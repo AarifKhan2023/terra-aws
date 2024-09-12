@@ -15,7 +15,7 @@ on:
         default: 'dev'
         type: string
 env:
-  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
   PRODUCT: ${{ vars.PRODUCT }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -27,7 +27,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: ${{ github.event.inputs.environment || 'dev' }}
+    environment: ${{ github.event.inputs.environment }}
 
     steps:
       # Step 1: Checkout code
@@ -42,7 +42,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ github.event.inputs.environment || 'dev' }}-${{ env.PRODUCT }}-github-terraform-role
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.ENVIRONMENT }}-${{ env.PRODUCT }}-github-terraform-role
           aws-region: ${{ env.AWS_REGION }}
 
       # Step 3: Setup Terraform
