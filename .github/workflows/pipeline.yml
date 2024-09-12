@@ -27,7 +27,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    environment: ${{ env.ENVIRONMENT }} 
+    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       # Step 1: Checkout code
