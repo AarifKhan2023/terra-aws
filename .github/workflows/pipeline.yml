@@ -21,7 +21,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      environment: dev
+    environment: dev
 
     steps:
       # Step 1: Checkout code
