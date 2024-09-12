@@ -14,6 +14,12 @@ on:
         required: true
         default: 'dev'
         type: string
+env:
+  ENVIRONMENT: ${{ github.event.inputs.environment }}
+  PRODUCT: ${{ vars.PRODUCT }}
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
 jobs:
   manage-infrastructure:
     name: Validate and Manage Terraform Infrastructure
@@ -21,27 +27,16 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    env:
-      ENVIRONMENT: ${{ github.event.inputs.environment }}
-      PRODUCT: terraform
-      AWS_REGION: ap-south-1
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+    environment: ${{ github.event.inputs.environment }}  
 
     steps:
       # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: Print ENV Variables
-        run: |
-          echo "ENVIRONMENT: ${{ env.ENVIRONMENT }}"
-          echo "AWS_REGION: ${{ env.AWS_REGION }}"
-          echo "PRODUCT: ${{ env.PRODUCT }}"
-          echo "AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}"
 
-      # # Step 2: Set Environment Variables
-      # - name: Set environment variables
-      #   run: echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+      # Step 2: Set Environment Variables
+      - name: Set environment variables
+        run: echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       # Step 2: Configure AWS credentials using IAM role for the selected account
       - name: Configure AWS credentials
