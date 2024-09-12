@@ -15,7 +15,7 @@ on:
         default: 'dev'
         type: string
 env:
-  ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+  #ENVIRONMENT: ${{ vars.ENVIRONMENT }}
   PRODUCT: ${{ vars.PRODUCT }}
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
