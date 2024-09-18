@@ -149,7 +149,9 @@ Resources:
               - dynamodb:Scan
               - dynamodb:UpdateItem
               - dynamodb:DeleteItem
-            Resource: arn:aws:dynamodb:ap-south-1:985539799124:table/terraform-lock
+            Resource: 
+              - arn:aws:dynamodb:ap-south-1:985539799124:table/terraform-
+              - arn:aws:dynamodb:ap-south-1:180294218922:table/prod-terraform-lock
 Outputs:
   GitHubAssumeRoleArn:
     Description: ARN of the GitHubAssumeRole IAM Role

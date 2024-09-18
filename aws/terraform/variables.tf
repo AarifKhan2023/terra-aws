@@ -40,3 +40,18 @@ variable "instance_type" {
   description = "The EC2 instance type"
   type        = string
 }
+
+variable "image_id" {
+  type        = string
+}
+
+variable "key_dynamodb" {
+  type        = string
+}
+variable "table_dynamodb" {
+  type        = string
+}
+
+variable "backend_bucket" {
+  type        = string
+}

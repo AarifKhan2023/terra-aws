@@ -1,0 +1,10 @@
+aws_region = "ap-south-1"
+environment = "dev"
+product = "terraform"
+instance_count = 1
+azs = ["ap-south-1a", "ap-south-1b"]
+instance_type = "t2.micro"
+image_id = "ami-0522ab6e1ddcc7055"
+table_dynamodb = "dev-terraform-lock"
+key_dynamodb = "terraform/dev-terraform.tfstate"
+backend_bucket = "manage-terraform-state-bucket"

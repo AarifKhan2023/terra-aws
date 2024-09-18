@@ -56,14 +56,14 @@ jobs:
         run: |
           terraform init
           terraform workspace select ${{ github.event.inputs.environment || 'dev' }} || terraform workspace new ${{ github.event.inputs.environment || 'dev' }}
-        working-directory: ${{ vars.ENVIRONMENT }}
+        working-directory: aws/terraform
 
       # Step 5: Terraform Plan
       - name: Terraform Plan
         run: terraform plan -var-file="${{ github.event.inputs.environment || 'dev' }}.tfvars"
-        working-directory: ${{ vars.ENVIRONMENT }}
+        working-directory: aws/terraform
 
       # Optional: Apply Terraform if needed
       # - name: Terraform Apply
       #   run: terraform apply -var-file="${{ github.event.inputs.environment || 'dev' }}.tfvars" -auto-approve
-      #   working-directory: ${{ vars.ENVIRONMENT }}
+      #   working-directory: aws/terraform

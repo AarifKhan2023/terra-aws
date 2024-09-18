@@ -1,6 +1,6 @@
 resource "aws_instance" "web" {
   count                  = var.instance_count
-  ami                    = "ami-0522ab6e1ddcc7055"
+  ami                    = var.image_id
   instance_type          = var.instance_type
   key_name               = aws_key_pair.key-tf.key_name
   subnet_id              = aws_subnet.public_a.id
