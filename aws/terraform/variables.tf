@@ -44,14 +44,3 @@ variable "instance_type" {
 variable "image_id" {
   type        = string
 }
-
-variable "key_dynamodb" {
-  type        = string
-}
-variable "table_dynamodb" {
-  type        = string
-}
-
-variable "backend_bucket" {
-  type        = string
-}
