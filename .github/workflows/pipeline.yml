@@ -54,12 +54,12 @@ jobs:
       # Step 4: Terraform Init with Workspace Selection
       - name: Terraform Init with Workspace
         run: |
-          terraform init 
+          terraform init -backend-config=${{ github.event.inputs.environment || 'dev' }}-backend.tfvars
           terraform workspace select ${{ github.event.inputs.environment || 'dev' }} || terraform workspace new ${{ github.event.inputs.environment || 'dev' }}
         working-directory: aws/terraform
 
       # Step 5: Terraform Plan
-      - name: Terraform Plan
+      - name: Terraform Plan 
         run: terraform plan -var-file="${{ github.event.inputs.environment || 'dev' }}.tfvars"
         working-directory: aws/terraform
 
