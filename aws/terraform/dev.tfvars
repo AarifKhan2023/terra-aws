@@ -5,6 +5,3 @@ instance_count = 1
 azs = ["ap-south-1a", "ap-south-1b"]
 instance_type = "t2.micro"
 image_id = "ami-0522ab6e1ddcc7055"
-table_dynamodb = "dev-terraform-lock"
-key_dynamodb = "terraform/dev-terraform.tfstate"
-backend_bucket = "dev-manage-terraform-state-bucket"
